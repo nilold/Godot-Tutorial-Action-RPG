@@ -2,9 +2,11 @@ extends KinematicBody2D
 
 const ACCELERATION = 600
 const MAX_SPEED = 80
+const ROLL_SPEED = 110
 const FRICTION = 400
 
 var velocity = Vector2.ZERO
+var roll_vector = Vector2.LEFT
 
 enum {
 	MOVE,
@@ -21,7 +23,7 @@ onready var animationState = animationTree.get("parameters/playback")
 func _ready():
 	animationTree.active = true
 
-func _process(delta):
+func _physics_process(delta):
 	match state:
 		MOVE:
 			move(delta)
@@ -38,33 +40,46 @@ func move(delta):
 	input_vector = input_vector.normalized()
 	
 	animate(input_vector)
-
-	if input_vector != Vector2.ZERO:
-		velocity = velocity.move_toward(input_vector * MAX_SPEED, ACCELERATION * delta)
-	else:
-		velocity = velocity.move_toward(Vector2.ZERO, FRICTION * delta)
-		
-	velocity = move_and_slide(velocity)
+	velocity = calc_velocity(input_vector, delta)
+	apply_velocity()
 	
 	if Input.is_action_just_pressed("attack"):
-		state = ATTACK;
+		state = ATTACK
+	elif Input.is_action_just_pressed("roll"):
+		state = ROLL;
 
 func roll(delta):
-	pass
+	velocity = roll_vector * ROLL_SPEED
+	apply_velocity()
+	animationState.travel("Roll")
 
 func attack(delta):
-	velocity = Vector2.ZERO
+	velocity *= 0.8
 	animationState.travel("Attack")
+	
+func apply_velocity():
+	velocity = move_and_slide(velocity)
 
+func calc_velocity(vector, delta):
+	if vector != Vector2.ZERO:
+		return velocity.move_toward(vector * MAX_SPEED, ACCELERATION * delta)
+	else:
+		return velocity.move_toward(Vector2.ZERO, FRICTION * delta)
 
 func animate(vector):
 	if vector != Vector2.ZERO:
-		animationState.travel("Run")
+		roll_vector = vector
 		animationTree.set("parameters/Idle/blend_position", vector)
 		animationTree.set("parameters/Run/blend_position", vector)
 		animationTree.set("parameters/Attack/blend_position", vector)
+		animationTree.set("parameters/Roll/blend_position", vector)
+		animationState.travel("Run")
 	else:
 		animationState.travel("Idle")
+
+func roll_animation_finished():
+	velocity = Vector2.ZERO
+	state = MOVE
 
 func attack_animation_finished():
 	state = MOVE

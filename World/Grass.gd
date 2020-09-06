@@ -1,10 +1,9 @@
 extends Node2D
-
-func _process(delta):
-	if Input.is_action_just_pressed("attack"):
-		load_grass_effect()
-		queue_free()
 		
+func _on_HurtBox_area_entered(area: Area2D):
+	load_grass_effect()
+	queue_free()
+
 func load_grass_effect():
 	var GrassEffect = load("res://Effects/GrassEffect.tscn")
 	var grassEffect = GrassEffect.instance()
