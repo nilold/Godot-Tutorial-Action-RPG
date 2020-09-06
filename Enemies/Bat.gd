@@ -1,5 +1,7 @@
 extends KinematicBody2D
 
+const BatDeathffect = preload("res://Effects/BatDeathEffect.tscn")
+
 var knockback = Vector2.ZERO
 
 onready var stats = $Stats
@@ -14,3 +16,6 @@ func _on_HurtBox_area_entered(area):
 
 func _on_Stats_no_health():
 	queue_free()
+	var batDeathEffect = BatDeathffect.instance()
+	batDeathEffect.position = position
+	get_parent().add_child(batDeathEffect)
