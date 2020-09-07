@@ -23,6 +23,8 @@ onready var hurtBox = $HurtBox
 onready var animationState = animationTree.get("parameters/playback")
 var stats = PlayerStats
 
+const PlayerHurtSound = preload("res://Player/PlayerHurtSound.tscn")
+
 func _ready():
 	stats.connect("no_health", self, "queue_free")
 	animationTree.active = true
@@ -90,9 +92,6 @@ func roll_animation_finished():
 
 func attack_animation_finished():
 	state = MOVE
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-#func _process(delta):
-#	pass
 
 
 func _on_HurtBox_area_entered(area):
@@ -101,3 +100,5 @@ func _on_HurtBox_area_entered(area):
 		damage = area.damage
 	stats.health -= damage
 	hurtBox.hit(0.75)
+	var hurtSound = PlayerHurtSound.instance()
+	get_parent().add_child(hurtSound)
