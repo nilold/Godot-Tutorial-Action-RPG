@@ -33,9 +33,9 @@ func _physics_process(delta):
 		MOVE:
 			move(delta)
 		ROLL:
-			roll(delta)
+			roll()
 		ATTACK:
-			attack(delta)
+			attack()
 
 
 func move(delta):
@@ -55,12 +55,12 @@ func move(delta):
 	elif Input.is_action_just_pressed("roll"):
 		state = ROLL;
 
-func roll(delta):
+func roll():
 	velocity = roll_vector * ROLL_SPEED
 	apply_velocity()
 	animationState.travel("Roll")
 
-func attack(delta):
+func attack():
 	velocity *= 0.8
 	animationState.travel("Attack")
 	
@@ -96,5 +96,8 @@ func attack_animation_finished():
 
 
 func _on_HurtBox_area_entered(area):
-	stats.health -= 1
+	var damage = 1
+	if area.damage:
+		damage = area.damage
+	stats.health -= damage
 	hurtBox.hit(0.75)
