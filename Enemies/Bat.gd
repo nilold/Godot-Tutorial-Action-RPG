@@ -23,6 +23,7 @@ onready var sprite = $AnimatedSprite
 onready var hurtBox = $HurtBox
 onready var softCollision = $SoftCollision
 onready var wanderController = $WanderController
+onready var animationPlayer = $BlinkAnimation
 
 func _physics_process(delta):
 	knockback = knockback.move_toward(Vector2.ZERO, FRICTION * delta)
@@ -62,13 +63,20 @@ func accelearate_towards(position, delta):
 	velocity = velocity.move_toward(direction * MAX_SPEED, ACCELERATION * delta)
 	sprite.flip_h = velocity.x < 0
 
-func _on_HurtBox_area_entered(area):
+func _on_HurtBox_area_entered(area: Area2D):
 	stats.health -= area.damage
-	knockback = area.knockback_vector * 100
-	hurtBox.hit(0.1)
+	knockback = area.knockback_vector
+	velocity = move_and_slide(knockback)
+	hurtBox.hit(0.3)
 
 func _on_Stats_no_health():
 	queue_free()
 	var batDeathEffect = BatDeathffect.instance()
 	batDeathEffect.position = position
 	get_parent().add_child(batDeathEffect)
+
+func _on_HurtBox_invicibility_started():
+	animationPlayer.play("Start")
+	
+func _on_HurtBox_invicibility_ended():
+	animationPlayer.play("Stop")

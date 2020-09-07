@@ -20,6 +20,8 @@ onready var swordHitbox = $HitboxPivot/SwordHitbox
 onready var animationPlayer = $AnimationPlayer
 onready var animationTree = $AnimationTree
 onready var hurtBox = $HurtBox
+onready var blinkAnimation = $BlinkAnimation
+
 onready var animationState = animationTree.get("parameters/playback")
 var stats = PlayerStats
 
@@ -65,6 +67,7 @@ func roll():
 func attack():
 	velocity *= 0.8
 	animationState.travel("Attack")
+	swordHitbox.knockback_vector = Vector2.ONE * MAX_SPEED
 	
 func apply_velocity():
 	velocity = move_and_slide(velocity)
@@ -99,6 +102,16 @@ func _on_HurtBox_area_entered(area):
 	if area.damage:
 		damage = area.damage
 	stats.health -= damage
+	
 	hurtBox.hit(0.75)
+	hurt_sund()
+	
+func hurt_sund():
 	var hurtSound = PlayerHurtSound.instance()
 	get_parent().add_child(hurtSound)
+
+func _on_HurtBox_invicibility_started():
+	blinkAnimation.play("Start")
+	
+func _on_HurtBox_invicibility_ended():
+	blinkAnimation.play("Stop")

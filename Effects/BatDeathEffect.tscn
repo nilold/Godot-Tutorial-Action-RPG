@@ -47,7 +47,7 @@ region = Rect2( 288, 0, 32, 32 )
 animations = [ {
 "frames": [ SubResource( 1 ), SubResource( 2 ), SubResource( 3 ), SubResource( 4 ), SubResource( 5 ), SubResource( 6 ), SubResource( 7 ), SubResource( 8 ), SubResource( 9 ), SubResource( 10 ) ],
 "loop": true,
-"name": "animate",
+"name": "die",
 "speed": 15.0
 } ]
 
@@ -56,9 +56,8 @@ script/source = "extends AnimatedSprite
 
 func _ready():
 	var _err = connect(\"animation_finished\", self, \"_on_animation_finished\")
-	
 	frame = 0
-	play(\"Animate\")
+	play(\"die\")
 
 
 func _on_animation_finished():
@@ -68,7 +67,7 @@ func _on_animation_finished():
 
 [node name="BatDeathEffect" type="AnimatedSprite"]
 frames = SubResource( 11 )
-animation = "animate"
+animation = "die"
 offset = Vector2( 0, -8 )
 script = SubResource( 12 )
 
