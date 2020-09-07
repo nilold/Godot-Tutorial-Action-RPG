@@ -19,9 +19,12 @@ var state = MOVE
 onready var swordHitbox = $HitboxPivot/SwordHitbox
 onready var animationPlayer = $AnimationPlayer
 onready var animationTree = $AnimationTree
+onready var hurtBox = $HurtBox
 onready var animationState = animationTree.get("parameters/playback")
+var stats = PlayerStats
 
 func _ready():
+	stats.connect("no_health", self, "queue_free")
 	animationTree.active = true
 	swordHitbox.knockback_vector = roll_vector
 
@@ -90,3 +93,8 @@ func attack_animation_finished():
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):
 #	pass
+
+
+func _on_HurtBox_area_entered(area):
+	stats.health -= 1
+	hurtBox.hit(0.75)
